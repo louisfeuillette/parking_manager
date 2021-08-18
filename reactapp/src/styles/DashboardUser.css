@@ -1,0 +1,11 @@
+.DashboardUser-page{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height:100vh;
+    background-color: #34495e;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
