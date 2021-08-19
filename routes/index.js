@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
+const UserModel = require("../models/users");
+const ParkingSpotModel = require("../models/parkingSpot");
+const AvailabilityModel = require("../models/availability")
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -10,9 +14,16 @@ router.get('/', function(req, res, next) {
 router.post('/sign-up', async function(req, res, next) {
 
   // créer un user en BDD sur la base du model user
+  var newUser = await new UserModel({
+    role: req.body.roleFront,
+    pseudo: req.body.pseudoFront,
+    password: req.body.passwordFront,
+  })
+
+  var userSaved = await newUser.save();
 
   // renvoi d'une reponse userSaved pour notifier le front 
-  res.json();
+  res.json({user: userSaved});
 });
 
 /* POST de la connexion de l'utilisateur + renvoi des erreurs */
@@ -71,7 +82,7 @@ router.get('/admin-get-info', async function(req, res, next) {
 });
 
 /* UPDATE read update et delete des infos users */
-router.update('/admin-update-info', async function(req, res, next) {
+router.put('/admin-update-info', async function(req, res, next) {
 
   // recuperer les infos d'un user
   // updater les données de l'utilisateur
