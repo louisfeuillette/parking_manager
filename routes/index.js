@@ -5,6 +5,10 @@ const UserModel = require("../models/users");
 const ParkingSpotModel = require("../models/parkingSpot");
 const AvailabilityModel = require("../models/availability")
 
+// module pour hasher le MDP des users
+var bcrypt = require('bcrypt');
+const cost = 10;
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -13,16 +17,17 @@ router.get('/', function(req, res, next) {
 /* POST de la création de l'utilisateur en BDD */
 router.post('/sign-up', async function(req, res, next) {
 
-  // créer un user en BDD sur la base du model user
+    // hash le mot de passe lors de l'enregistrement en BDD
+  const hash = bcrypt.hashSync(req.body.passwordFront, cost);
+
   var newUser = await new UserModel({
     role: req.body.roleFront,
     pseudo: req.body.pseudoFront,
-    password: req.body.passwordFront,
+    password: hash,
   })
 
   var userSaved = await newUser.save();
 
-  // renvoi d'une reponse userSaved pour notifier le front 
   res.json({user: userSaved});
 });
 

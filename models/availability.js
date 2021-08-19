@@ -8,6 +8,6 @@ var AvailabilitySchema = mongoose.Schema({
     active: Boolean,
 });
 
-const AvailabilityModel = mongoose.model('users', AvailabilitySchema);
+const AvailabilityModel = mongoose.model('availability', AvailabilitySchema);
 
 module.exports = AvailabilityModel;

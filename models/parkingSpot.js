@@ -5,6 +5,6 @@ var ParkingSpotSchema = mongoose.Schema({
     floorNumber: Number,
 });
 
-const ParkingSpotModel = mongoose.model('users', ParkingSpotSchema);
+const ParkingSpotModel = mongoose.model('parkingSpot', ParkingSpotSchema);
 
 module.exports = ParkingSpotModel;
