@@ -23,17 +23,19 @@ const signUp_User = async (req, res, next) => {
             error.push("Ce pseudo est déjà utilisé");
         } else {
             var newUser = await new UserModel({
-            token: uid2(32),
-            role: req.body.roleFront, // only "admin" or "public_user"
-            pseudo: req.body.pseudoFront,
-            password: hash,
+                token: uid2(32),
+                role: req.body.roleFront, // only "admin" or "public_user"
+                pseudo: req.body.pseudoFront,
+                password: hash,
             });
             var userSaved = await newUser.save();
         }
 
         userSaved ? (result = true) : (result = false);
 
-        res.status(201).json({ user: userSaved, result, error });
+        return Promise.all([user, newUser, userSaved]).then(
+            res.status(201).json({ user: userSaved, result, error })
+        )
 
     } catch (err) {
         res.status(400).json({error: "Création de votre compte impossible pour le moment"} )

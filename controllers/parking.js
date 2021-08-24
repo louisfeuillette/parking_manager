@@ -34,33 +34,63 @@ const getPlaceAtFloorNbr = async (req, res, next) => {
 /* POST the user is choosing his place */
 const takeParkingPlace = async (req, res, next) => {
 
-    let result = false;
-    let message = "";
-    let startDate = new Date()
-    let availability = null
-
     try {
+
+        let result = false;
+        let message = "";
+        let startDate = new Date()
+        let availability = null
+        let availabilitySaved = null
+
         let parkingSpotFound = await ParkingSpotModel.findOne({
             _id: req.body.parkingSpace_idFront
         })
 
-        if(parkingSpotFound){
-            availability = await new AvailabilityModel({
-                userID: req.body.user_idFront,
-                parkingSpaceID: req.body.parkingSpace_idFront,
-                startsAt: startDate,
-                endsAt: null,
-                active: true,
-            })
-            await availability.save()
-            message = 'vous êtes désormais stationné'
-            result = true
+        let isPlaceTaken = await AvailabilityModel.findOne({
+            parkingSpaceID: req.body.parkingSpace_idFront
+        })
+
+        let isUserAlreadyParked = await AvailabilityModel.findOne({
+            userID: req.body.user_idFront
+        })
+
+        if(!isUserAlreadyParked){
+            if(isPlaceTaken === null && parkingSpotFound) {
+                availability = await new AvailabilityModel({
+                    userID: req.body.user_idFront,
+                    parkingSpaceID: req.body.parkingSpace_idFront,
+                    startsAt: startDate,
+                    endsAt: null,
+                    active: true,
+                })
+                availabilitySaved = await availability.save()
+                message = "Bienvenue ! Vous êtes désormais stationné"
+                result = true
+            } else if(!isPlaceTaken.active){
+                    if(parkingSpotFound){
+                        availability = await new AvailabilityModel({
+                            userID: req.body.user_idFront,
+                            parkingSpaceID: req.body.parkingSpace_idFront,
+                            startsAt: startDate,
+                            endsAt: null,
+                            active: true,
+                        })
+                        availabilitySaved = await availability.save()
+                        message = "Bienvenue ! Vous êtes désormais stationné"
+                        result = true
+                    } else {
+                        message = "place inexistante"
+                    }
+            } else {
+                message = "Désolé, la place est déjà prise"
+            }
         } else {
-            message = "place inexistante"
+            message = "Vous êtes déjà garé dans nos locaux"
         }
 
-        return Promise.all([parkingSpotFound, availability]).then(
-            res.status(201).json({parkingSpotFound, message, result})
+
+        return Promise.all([parkingSpotFound, isPlaceTaken, isUserAlreadyParked, availability, availabilitySaved]).then(
+            res.status(201).json({parkingSpotFound, ticket: availabilitySaved, message, result})
         ).catch(err => err)
 
     } catch (err) {
