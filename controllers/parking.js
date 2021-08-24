@@ -2,6 +2,10 @@ const ParkingSpotModel = require("../models/parkingSpot");
 const AvailabilityModel = require("../models/availability");
 const UserModel = require("../models/users");
 
+// module used to hash pwd of the users
+var bcrypt = require("bcrypt");
+const cost = 10;
+
 /* GET all places from the parking */
 const getAllPlaces = async (req, res, next) => {
 
@@ -20,13 +24,14 @@ const getAllPlaces = async (req, res, next) => {
 /* GET a place from a specific floor */
 const getPlaceAtFloorNbr = async (req, res, next) => {
     try {
+
         let findPlace = await ParkingSpotModel.find({
             floorNumber: req.params.floorNumberFront
         })
         
         res.status(200).json(findPlace);
     } catch (err) {
-        res.status(400).json({error: "Pas de place de parking à l'étage souhaité, veuillez modifier l'étage"})
+        res.status(400).json({error: "Il y a une erreur à l'étage souhaité, veuillez modifier l'étage ou contacter un admin"})
         throw new Error(err)
     }
 }
@@ -140,7 +145,7 @@ const userLeaveParking = async (req, res, next) => {
             res.status(200).json({result, ticket})
         ).catch(err => err) 
 
-    } catch {
+    } catch (err){
         res.status(400).json({error: "Veuillez contacter un admin pour faciliter votre sortie"})
         throw new Error(err)
     }
@@ -154,7 +159,7 @@ const getUserInfos = async (req, res, next) => {
         })
 
         res.status(200).json(userInfos);
-    } catch {
+    } catch (err){
         res.status(400).json({error: "Impossible de charger les données de cette utilisateur"})
         throw new Error(err)
     }
@@ -186,7 +191,7 @@ const updateUserInfo = async (req, res, next) => {
             res.status(201).json({user: userAfterUpdate, result})
         ).catch(err => err) 
         
-    } catch {
+    } catch (err){
         res.status(400).json({error: "L'utilisateur n'a pas été mis à jour"})
         throw new Error(err)
     }
@@ -203,7 +208,7 @@ const deleteUser = async (req, res, next) => {
         userDeleted ? result = true : result = false
         
         res.status(200).json(result)
-    } catch {
+    } catch (err){
         res.status(404).json({error: "L'utilisateur n'a pas été supprimé. Veuillez re-essayer."})
         throw new Error(err)
     }

@@ -1,10 +1,6 @@
 var express = require("express");
 var router = express.Router();
 
-const UserModel = require("../models/users");
-const ParkingSpotModel = require("../models/parkingSpot");
-const AvailabilityModel = require("../models/availability");
-
 const authentification_controller = require('../controllers/authentification')
 const parking_controller = require('../controllers/parking')
 

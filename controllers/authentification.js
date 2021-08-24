@@ -1,10 +1,10 @@
 const UserModel = require("../models/users");
 
-// module pour hasher le MDP des users
+// module used to hash pwd of the users
 var bcrypt = require("bcrypt");
 const cost = 10;
 
-// module de création de token 
+// module used to create a token 
 var uid2 = require("uid2");
 
 /* POST create a user in DB */
@@ -14,7 +14,7 @@ const signUp_User = async (req, res, next) => {
     let error = [];
 
     try {
-        // hash le mot de passe lors de l'enregistrement en BDD
+        // hash the pwd 
         const hash = bcrypt.hashSync(req.body.passwordFront, cost);
 
         user = await UserModel.findOne({ pseudo: req.body.pseudoFront });
